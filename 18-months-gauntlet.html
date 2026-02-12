@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>18 Months to Series A or Sudden Death</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 20px 10px;
+      line-height: 1.5;
+    }
+    h1, h2, h3 { text-align: center; color: #60a5fa; margin: 0.4em 0; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .intro {
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: center;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+    .mission { font-size: 1.1rem; color: #bfdbfe; margin: 12px 0; }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .dash-card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+    .dash-label { font-size: 0.95rem; color: #94a3b8; }
+    .dash-value { font-size: 1.7rem; font-weight: 700; color: #93c5fd; }
+    .round-title {
+      background: #1d4ed8;
+      color: white;
+      padding: 14px;
+      border-radius: 12px;
+      margin: 32px 0 16px;
+      font-size: 1.35rem;
+      text-align: center;
+    }
+    .decision-card {
+      background: #1e293b;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+    }
+    .question { font-size: 1.3rem; margin-bottom: 16px; }
+    .options { display: flex; flex-direction: column; gap: 14px; }
+    .option-btn {
+      background: #334155;
+      border: 2px solid #475569;
+      color: white;
+      padding: 16px 20px;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.22s;
+      text-align: left;
+    }
+    .option-btn:hover { background: #475569; border-color: #93c5fd; }
+    .option-btn.active {
+      background: #1d4ed8;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 4px rgba(96,165,250,0.25);
+    }
+    .trap-screen {
+      background: #1e293b;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+    }
+    .trap-title { font-size: 1.4rem; color: #f59e0b; margin-bottom: 16px; }
+    .trap-desc { margin-bottom: 20px; font-size: 1.05rem; }
+    .trap-item { background: #334155; padding: 12px; border-radius: 8px; margin-bottom: 12px; }
+    .trap-item strong { color: #ef4444; }
+    .continue-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+    }
+    .continue-btn:hover { background: #2563eb; }
+    .hidden { display: none !important; }
+    #result {
+      background: #111827;
+      border-radius: 14px;
+      padding: 28px;
+      margin: 40px 0;
+      border: 4px solid;
+      text-align: center;
+    }
+    .success { border-color: #22c55e; color: #86efac; }
+    .fail    { border-color: #ef4444; color: #fca5a5; }
+    .warning { border-color: #f59e0b; color: #fde047; }
+    button#restart {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      font-size: 1.15rem;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 32px auto 0;
+      display: block;
+    }
+    button#restart:hover { background: #2563eb; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0 16px;
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 8px;
+      text-align: center;
+      border-bottom: 1px solid #334155;
+    }
+    th { background: #334155; color: #93c5fd; font-weight: 600; }
+    tr.profit td:nth-child(3) { color: #86efac; font-weight: bold; }
+    tr.loss   td:nth-child(3) { color: #fca5a5; font-weight: bold; }
+    tr.bankrupt { background: #7f1d1d; color: #fee2e2; }
+    tr.diligence-fail { background: #78350f; }
+    .table-title { text-align: center; margin: 16px 0 8px; font-size: 1.25rem; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="intro">
+    <h1>18 Months to Series A or Sudden Death</h1>
+    <div class="mission">
+      The Mission: Hit ₹60 L/mo Sales, keep Cash > 0, and survive the Unit Economics Gauntlet.
+    </div>
+    <div id="live-dashboard" class="dashboard">
+      <div class="dash-card">
+        <div class="dash-label">Cash</div>
+        <div class="dash-value" id="dash-cash">₹300 L</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Sales</div>
+        <div class="dash-value" id="dash-sales">₹20 L/mo</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Burn</div>
+        <div class="dash-value" id="dash-burn">₹5 L/mo</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="start-screen">
+    <button class="option-btn" style="font-size:1.2rem; padding:20px 48px; width:280px; margin:0 auto; display:block;" onclick="startGame()">
+      Start the Gauntlet
+    </button>
+  </div>
+
+  <div id="game" class="hidden">
+    <div id="round-titles">
+      <div class="round-title">ROUND 1 – The Foundation (Months 1–6)</div>
+    </div>
+    <div id="decisions"></div>
+
+    <div id="result" class="hidden"></div>
+
+    <div id="progress-section" class="hidden">
+      <div class="table-title">Month-by-Month Progress</div>
+      <table id="progress-table">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Sales (₹ L/mo)</th>
+            <th>Profit/Loss (₹ L)</th>
+            <th>Cash End (₹ L)</th>
+            <th>Burn (₹ L/mo)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <button id="restart" class="hidden" onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// GAME LOGIC
+// ──────────────────────────────────────────────
+
+const decisions = [
+  {id:"D1", q:"D1 Customer DNA",          a:"Performance Blitz: Spend ₹50 L (Sales +₹15 L/mo)",               b:"Brand & Community: Spend ₹20 L (Sales +₹5 L/mo)"},
+  {id:"D2", q:"D2 The Brain",             a:"Integrated Systems: VCFO Partner (₹2 L/mo)",                     b:"Junior Interns: Junior Ops (₹1 L/mo)"},
+  {id:"D3", q:"D3 Product Strategy",      a:"Low-Moat: Resell trending items (Fast growth)",                  b:"High-Moat: Custom R&D items (Slow growth)"},
+  {id:"D4", q:"D4 Inventory",             a:"Bulk Buy: Spend ₹1 Cr upfront (20% better margins)",            b:"Lean/JIT: Spend ₹20 L upfront (Pay more per unit)"},
+  {id:"D5", q:"D5 Expansion",             a:"Army of Reps: Hire 20 staff (₹15 L/mo)",                         b:"Automation: 3 Leads + CRM (₹6 L/mo)"},
+  {id:"D6", q:"D6 Governance",            a:"Full Internal Audit: Reconcile all (₹5 L one-time)",            b:"Skip/Ignore: \"Focus on Sales.\" (₹0)"},
+  {id:"D7", q:"D7 Retention",             a:"The Discount Drug: 50% Off (Sales +₹10 L)",                      b:"Value Strategy: Bundles/Subs (Sales +₹5 L)"},
+  {id:"D8", q:"D8 The Pitch",             a:"Fully Loaded ROI (Transparent)",                                 b:"Unloaded ROI (Vanity)"},
+  {id:"D9", q:"D9 Growth Tap",            a:"Organic Engine: Ads to ₹0",                                     b:"The Ad-Hook: Spend ₹50 L"},
+  {id:"D10",q:"D10 Diligence",            a:"The Ready-Room",                                                b:"The Scramble"}
+];
+
+let state = { choices: {}, step: 0, trapShown: false };
+let sim = {
+  cash: 300,
+  sales: 20,
+  margin: 0.40,
+  fixedBurn: 5,
+  ops: 0,
+  expansion: 0,
+  history: [{month:0, sales:20, pnl:0, cash:300, burn:5}]
+};
+
+function startGame() {
+  document.getElementById("start-screen").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  showDecision();
+}
+
+function showDecision() {
+  if (state.step >= decisions.length) {
+    simulate();
+    showResult();
+    showProgressTable();
+    return;
+  }
+
+  // After D7 (step 7 is D8), show trap if not shown
+  if (state.step === 7 && !state.trapShown) {
+    showTrapScreen();
+    return;
+  }
+
+  const d = decisions[state.step];
+  document.getElementById("decisions").innerHTML = `
+    <div class="decision-card">
+      <div class="question">${d.q}</div>
+      <div class="options">
+        <button class="option-btn" onclick="choose('${d.id}', 'A')">A (Aggressive): ${d.a}</button>
+        <button class="option-btn" onclick="choose('${d.id}', 'B')">B (Strategic): ${d.b}</button>
+      </div>
+    </div>
+  `;
+}
+
+function choose(id, choice) {
+  state.choices[id] = choice;
+  const btns = document.querySelectorAll(".option-btn");
+  btns.forEach(b => b.classList.toggle("active", b.innerText.startsWith(choice)));
+  applyImmediateEffect(id, choice);
+  updateLiveDashboard();
+  setTimeout(() => {
+    state.step++;
+    showDecision();
+  }, 380);
+}
+
+function applyImmediateEffect(id, choice) {
+  // Apply effects immediately for live update
+  switch (id) {
+    case "D1":
+      if (choice === 'A') { sim.cash -= 50; sim.sales += 15; }
+      else { sim.cash -= 20; sim.sales += 5; }
+      break;
+    case "D2":
+      sim.ops = choice === 'A' ? 2 : 1;
+      break;
+    case "D3":
+      // Growth applied in sim
+      break;
+    case "D4":
+      if (choice === 'A') { sim.cash -= 100; sim.margin = 0.60; }
+      else { sim.cash -= 20; }
+      break;
+    case "D5":
+      if (choice === 'A') { sim.expansion = 15; sim.sales += 20; }
+      else { sim.expansion = 6; sim.sales += 10; }
+      break;
+    case "D6":
+      if (choice === 'A') sim.cash -= 5;
+      break;
+    case "D7":
+      if (choice === 'A') { sim.sales += 10; sim.margin = Math.max(0.10, sim.margin - 0.15); }
+      else { sim.sales += 5; }
+      break;
+    case "D9":
+      if (choice === 'B') sim.cash -= 50;
+      break;
+    // D8 and D10 no immediate economic effect
+  }
+}
+
+function updateLiveDashboard() {
+  const burn = sim.fixedBurn + sim.ops + sim.expansion;
+  document.getElementById("dash-cash").innerText = `₹${Math.round(sim.cash)} L`;
+  document.getElementById("dash-sales").innerText = `₹${Math.round(sim.sales)} L/mo`;
+  document.getElementById("dash-burn").innerText = `₹${Math.round(burn)} L/mo`;
+}
+
+function showTrapScreen() {
+  const c = state.choices;
+  let productTrap = c.D3 === 'A';
+  let brandTrap = c.D1 === 'A';
+  let managementTrap = c.D2 === 'B';
+
+  let html = `
+    <div class="trap-screen">
+      <div class="trap-title">The Trap</div>
+      <div class="trap-desc">"You didn't choose these options. Your architecture chose them for you."</div>
+      <div class="trap-item">
+        <strong>The Product Trap</strong><br>
+        Chose Low-Moat? You have loyalty issues. You are FORCED to take the Discount Drug to clear inventory.
+        ${productTrap ? '<br><em>Applied: D7 forced to A (Discount Drug)</em>' : '<br><em>Not applied</em>'}
+      </div>
+      <div class="trap-item">
+        <strong>The Brand Edge Trap (D1 → D5)</strong><br>
+        Chose Blitz? You have no organic pull. You are FORCED to hire the Army of Reps to push sales.
+        ${brandTrap ? '<br><em>Applied: D5 forced to A (Army of Reps)</em>' : '<br><em>Not applied</em>'}
+      </div>
+      <div class="trap-item">
+        <strong>The Management Trap (D2 → D5)</strong><br>
+        Chose Interns? Your systems are manual. You are FORCED to hire the Army of Reps to manage the chaos.
+        ${managementTrap ? '<br><em>Applied: D5 forced to A (Army of Reps)</em>' : '<br><em>Not applied</em>'}
+      </div>
+      <button class="continue-btn" onclick="continueFromTrap()">Continue to Round 3</button>
+    </div>
+  `;
+
+  document.getElementById("decisions").innerHTML = html;
+
+  // Apply forces
+  if (productTrap) {
+    state.choices.D7 = 'A';
+    applyImmediateEffect('D7', 'A');
+  }
+  if (brandTrap || managementTrap) {
+    state.choices.D5 = 'A';
+    applyImmediateEffect('D5', 'A');
+  }
+  updateLiveDashboard();
+}
+
+function continueFromTrap() {
+  state.trapShown = true;
+  showDecision();
+}
+
+function applyTrapsAndForces() {
+  const c = state.choices;
+  let crash = false;
+
+  // Traps already applied in showTrapScreen, but re-confirm
+  if (c.D1 === 'A' || c.D2 === 'B') c.D5 = 'A';
+  if (c.D3 === 'A') c.D7 = 'A';
+
+  // Zuckerberg Tax
+  if (c.D1 === 'A' && c.D9 === 'A') {
+    crash = true;
+    c.D9 = 'B';
+  }
+
+  return { crash };
+}
+
+function simulate() {
+  const c = state.choices;
+  const traps = applyTrapsAndForces();
+
+  // Reset history for full sim
+  sim.history = [{month:0, sales: sim.sales, pnl:0, cash: sim.cash, burn: sim.fixedBurn + sim.ops + sim.expansion}];
+
+  let bankruptAt = -1;
+  for (let m = 1; m <= 18; m++) {
+    const burn = sim.fixedBurn + sim.ops + sim.expansion;
+    const pnl = (sim.sales * sim.margin) - burn;
+    sim.cash += pnl;
+
+    sim.history.push({
+      month: m,
+      sales: Math.round(sim.sales),
+      pnl: Math.round(pnl),
+      cash: Math.round(sim.cash),
+      burn: Math.round(burn)
+    });
+
+    if (sim.cash <= 0) { bankruptAt = m; break; }
+
+    // Late growth approximation
+    if (m === 6  && c.D3 === 'A') sim.sales += 6;
+    if (m === 12 && c.D3 === 'B') sim.sales += 9;
+  }
+
+  // Final leaks / hammers
+  if (c.D4 === 'A' && sim.sales < 60) sim.cash -= 50;           // Inventory Implosion
+  if (c.D2 === 'B' && c.D6 === 'B')   sim.cash -= 40;           // Compliance Hammer
+
+  // Apply crash if triggered
+  if (traps.crash) {
+    sim.sales = Math.round(sim.sales * 0.6);
+    sim.history.forEach(h => { if (h.month >= 13) h.sales = Math.round(h.sales * 0.6); });
+  }
+
+  // Diligence friction
+  const diligenceFail = (c.D8 === 'B' || c.D10 === 'B');
+  if (diligenceFail) sim.cash -= 15;
+
+  sim.finalCash   = Math.max(0, Math.round(sim.cash));
+  sim.finalSales  = Math.round(sim.sales);
+  sim.finalBurn   = Math.round(sim.fixedBurn + sim.ops + sim.expansion);
+  sim.bankruptAt  = bankruptAt;
+  sim.diligenceFail = diligenceFail;
+}
+
+function showResult() {
+  const el = document.getElementById("result");
+  let verdict = "";
+  let cls = "";
+
+  const cleared = sim.finalSales >= 60 &&
+                  sim.finalCash > 0 &&
+                  !sim.diligenceFail &&
+                  sim.bankruptAt === -1;
+
+  if (sim.bankruptAt !== -1) {
+    verdict = `Bankrupt in Month ${sim.bankruptAt} — Sudden Death`;
+    cls = "fail";
+  } else if (sim.finalSales < 60) {
+    verdict = "Sales < ₹60 L/mo — Mission Failed";
+    cls = "fail";
+  } else if (sim.diligenceFail) {
+    verdict = "Diligence Failed (Vanity/Scramble) — VC Walks";
+    cls = "warning";
+  } else {
+    verdict = "Series A Cleared! 🎉";
+    cls = "success";
+  }
+
+  el.innerHTML = `
+    <h2>${verdict}</h2>
+    <div class="dashboard" style="margin:24px 0;">
+      <div class="dash-card"><div class="dash-label">Final Cash</div><div class="dash-value">₹${sim.finalCash} L</div></div>
+      <div class="dash-card"><div class="dash-label">Final Sales</div><div class="dash-value">₹${sim.finalSales} L/mo</div></div>
+      <div class="dash-card"><div class="dash-label">Monthly Burn</div><div class="dash-value">₹${sim.finalBurn} L/mo</div></div>
+    </div>
+  `;
+  el.className = cls;
+  el.classList.remove("hidden");
+  document.getElementById("restart").classList.remove("hidden");
+}
+
+
+</script>
+</body>
+</html>
