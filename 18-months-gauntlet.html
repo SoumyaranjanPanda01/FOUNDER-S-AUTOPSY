@@ -478,9 +478,7 @@
 <body>
 
 <div class="container">
-  <div class="top-controls">
-    <button id="toggle-leaderboard" class="top-btn" onclick="toggleLeaderboard()">Show Leaderboard</button>
-  </div>
+  <div class="top-controls"></div>
 
   <div class="intro">
     <h1>18 Months to Series A or Sudden Death</h1>
@@ -491,9 +489,9 @@
 
   <div id="start-screen">
     <div class="start-controls">
-      <input id="player-name" class="name-input" type="text" maxlength="32" placeholder="Enter your name for leaderboard" />
+      <input id="player-name" class="name-input" type="text" maxlength="32" placeholder="Enter your name" />
     </div>
-    <div class="name-note">Your final Cash, Sales, and Burn will be saved on leaderboard.</div>
+    <div class="name-note"></div>
     <button class="option-btn" style="font-size:1.2rem; padding:20px 48px; width:280px; margin:0 auto; display:block;" onclick="startGame()">
       Start the Gauntlet
     </button>
@@ -509,21 +507,7 @@
     <button id="restart" class="hidden" onclick="location.reload()">Play Again</button>
   </div>
 
-  <div id="leaderboard-section" class="trap-screen hidden">
-    <h3 class="trap-title">Leaderboard</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Cash</th>
-          <th>Sales</th>
-          <th>Burn</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard-body"></tbody>
-    </table>
-  </div>
+
 </div>
 
 <script>
@@ -544,7 +528,6 @@ const decisions = [
   {id:"D10",q:"D10 Diligence",            a:"The Ready-Room",                                                b:"The Scramble"}
 ];
 
-const LEADERBOARD_KEY = "gauntlet_leaderboard_v1";
 let currentPlayerName = "";
 let state = { choices: {}, step: 0, trapShown: false, choiceLocked: false, finalLeaksShown: false, resultSaved: false };
 let sim = {
@@ -578,102 +561,6 @@ function normalizeName(name) {
   return name.replace(/\s+/g, " ").trim().slice(0, 32);
 }
 
-function loadLocalLeaderboard() {
-  try {
-    const raw = localStorage.getItem(LEADERBOARD_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveLocalLeaderboardEntry(entry) {
-  const board = loadLocalLeaderboard();
-  board.push(entry);
-  board.sort((a, b) => (b.cash - a.cash) || (b.sales - a.sales) || (a.burn - b.burn) || ((a.ts || 0) - (b.ts || 0)));
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board.slice(0, 50)));
-}
-
-async function loadLeaderboard() {
-  try {
-    const res = await fetch("/api/leaderboard", { headers: { "Accept": "application/json" } });
-    if (!res.ok) throw new Error("bad_status");
-    const rows = await res.json();
-    if (!Array.isArray(rows)) throw new Error("bad_payload");
-    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(rows.slice(0, 50)));
-    return rows;
-  } catch (e) {
-    return loadLocalLeaderboard();
-  }
-}
-
-async function saveLeaderboardEntry() {
-  if (state.resultSaved || !currentPlayerName) return;
-  const entry = {
-    name: currentPlayerName,
-    cash: sim.finalCash,
-    sales: sim.finalSales,
-    burn: sim.finalBurn,
-    ts: Date.now()
-  };
-
-  try {
-    const res = await fetch("/api/leaderboard", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: entry.name,
-        cash: entry.cash,
-        sales: entry.sales,
-        burn: entry.burn
-      })
-    });
-    if (!res.ok) throw new Error("save_failed");
-  } catch (e) {
-    saveLocalLeaderboardEntry(entry);
-  }
-
-  state.resultSaved = true;
-}
-
-async function renderLeaderboard() {
-  const body = document.getElementById("leaderboard-body");
-  if (!body) return;
-  const board = (await loadLeaderboard()).slice(0, 10);
-  if (!board.length) {
-    body.innerHTML = `<tr><td colspan="5">No entries yet. Be the first founder.</td></tr>`;
-    return;
-  }
-  body.innerHTML = board.map((row, idx) => `
-    <tr>
-      <td>${idx + 1}</td>
-      <td>${escapeHtml(row.name)}</td>
-      <td>${formatCashL(row.cash)}</td>
-      <td>${formatMonthlyL(row.sales)}</td>
-      <td>${formatMonthlyL(row.burn)}</td>
-    </tr>
-  `).join("");
-}
-
-function setLeaderboardToggleLabel() {
-  const btn = document.getElementById("toggle-leaderboard");
-  const section = document.getElementById("leaderboard-section");
-  if (!btn || !section) return;
-  btn.innerText = section.classList.contains("hidden") ? "Show Leaderboard" : "Hide Leaderboard";
-}
-
-async function toggleLeaderboard() {
-  const section = document.getElementById("leaderboard-section");
-  if (!section) return;
-  if (section.classList.contains("hidden")) {
-    await renderLeaderboard();
-    section.classList.remove("hidden");
-  } else {
-    section.classList.add("hidden");
-  }
-  setLeaderboardToggleLabel();
-}
 
 function getRoundTitle(step) {
   if (step <= 3) return "ROUND 1 - The Foundation (Months 1-6)";
@@ -979,7 +866,6 @@ function showResult() {
 
   // Keep live dashboard display aligned with final board units and values.
   updateLiveDashboard();
-  saveLeaderboardEntry().then(renderLeaderboard).catch(() => {});
 
   el.innerHTML = `
     <h2>${verdict}</h2>
@@ -993,15 +879,6 @@ function showResult() {
   el.className = cls;
   el.classList.remove("hidden");
   document.getElementById("restart").classList.remove("hidden");
-}
-
-renderLeaderboard().catch(() => {});
-setLeaderboardToggleLabel();
-const playerNameInput = document.getElementById("player-name");
-if (playerNameInput) {
-  playerNameInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") startGame();
-  });
 }
 
 
