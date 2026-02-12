@@ -1,3 +1,6 @@
+# Dependencies
+node_modules/
+
 # Database
 leaderboard.db
 leaderboard.db-shm
