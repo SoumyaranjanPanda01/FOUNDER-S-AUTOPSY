@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>18 Months to Series A or Sudden Death</title>
+  <style>
+    :root {
+      --bg: #090d1b;
+      --bg-soft: #131b33;
+      --panel: rgba(13, 21, 43, 0.8);
+      --panel-border: rgba(122, 173, 255, 0.28);
+      --text: #dbeafe;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #22d3ee;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      margin: 0;
+      padding: 20px 12px 36px;
+      line-height: 1.5;
+      background:
+        radial-gradient(circle at 8% 5%, rgba(34, 211, 238, 0.2), transparent 30%),
+        radial-gradient(circle at 95% 15%, rgba(56, 189, 248, 0.18), transparent 35%),
+        linear-gradient(155deg, #060811 0%, var(--bg) 58%, var(--bg-soft) 100%);
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      margin: 0.4em 0;
+      letter-spacing: 0.01em;
+    }
+
+    h1 {
+      background: linear-gradient(90deg, #dbeafe, #7dd3fc 48%, #a5f3fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 10px 30px rgba(56, 189, 248, 0.25);
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .top-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .top-btn {
+      border: 1px solid rgba(125, 211, 252, 0.45);
+      background: linear-gradient(150deg, rgba(14, 116, 144, 0.85), rgba(30, 64, 175, 0.8));
+      color: #f8fbff;
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-size: 0.92rem;
+      cursor: pointer;
+    }
+
+    .top-btn:hover {
+      filter: brightness(1.08);
+    }
+
+    .top-btn.danger {
+      background: linear-gradient(150deg, rgba(185, 28, 28, 0.9), rgba(153, 27, 27, 0.82));
+      border-color: rgba(252, 165, 165, 0.45);
+    }
+
+    .intro,
+    .decision-card,
+    .trap-screen,
+    #result,
+    table {
+      background: linear-gradient(145deg, rgba(16, 24, 48, 0.88), var(--panel));
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(8px);
+    }
+
+    .intro {
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      margin-bottom: 32px;
+      text-align: center;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, 0.34);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro::before {
+      content: "";
+      position: absolute;
+      inset: -120% 40% auto -20%;
+      height: 220%;
+      background: linear-gradient(180deg, rgba(125, 211, 252, 0.18), transparent);
+      transform: rotate(22deg);
+      pointer-events: none;
+    }
+
+    .mission {
+      font-size: 1.08rem;
+      color: #bfdbfe;
+      margin: 12px 0;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .dash-card {
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      background: linear-gradient(145deg, rgba(22, 34, 65, 0.88), rgba(19, 30, 56, 0.94));
+      border: 1px solid rgba(148, 163, 184, 0.23);
+      transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32);
+    }
+
+    .dash-label {
+      font-size: 0.92rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+
+    .dash-value {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #c4f1ff;
+      text-shadow: 0 0 14px rgba(56, 189, 248, 0.34);
+    }
+
+    .round-title {
+      color: #e0f2fe;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      margin: 32px 0 16px;
+      font-size: 1.35rem;
+      text-align: center;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      background: linear-gradient(90deg, rgba(14, 116, 144, 0.75), rgba(30, 64, 175, 0.65));
+      box-shadow: 0 14px 26px rgba(2, 8, 23, 0.4);
+      animation: fadeUp 0.45s ease both;
+    }
+
+    .decision-card {
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 16px 26px rgba(0, 0, 0, 0.28);
+      animation: fadeUp 0.45s ease both;
+    }
+
+    .question {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      color: #dbeafe;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .start-controls {
+      max-width: 440px;
+      margin: 0 auto 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .name-input {
+      width: 100%;
+      border: 1px solid rgba(125, 211, 252, 0.45);
+      background: rgba(15, 23, 42, 0.75);
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .name-input:focus {
+      border-color: #7dd3fc;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .name-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+    }
+
+    #leaderboard-section {
+      margin-top: 26px;
+    }
+
+    #leaderboard-section h3 {
+      margin-top: 0;
+    }
+
+    .option-btn,
+    .continue-btn,
+    button#restart {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border-radius: 10px;
+      cursor: pointer;
+      color: #f8fbff;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease, background 0.2s ease;
+    }
+
+    .option-btn::after,
+    .continue-btn::after,
+    button#restart::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.2) 45%, transparent 70%);
+      transform: translateX(-130%);
+      transition: transform 0.5s ease;
+      z-index: -1;
+    }
+
+    .option-btn:hover::after,
+    .continue-btn:hover::after,
+    button#restart:hover::after {
+      transform: translateX(130%);
+    }
+
+    .option-btn {
+      background: linear-gradient(150deg, rgba(41, 55, 89, 0.95), rgba(32, 43, 72, 0.96));
+      border: 2px solid rgba(148, 163, 184, 0.28);
+      padding: 16px 20px;
+      font-size: 1.05rem;
+      text-align: left;
+      box-shadow: 0 10px 16px rgba(2, 8, 23, 0.28);
+    }
+
+    .option-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(125, 211, 252, 0.75);
+      box-shadow: 0 14px 24px rgba(2, 8, 23, 0.34);
+    }
+
+    .option-btn.active {
+      background: linear-gradient(150deg, rgba(14, 116, 144, 0.88), rgba(30, 64, 175, 0.84));
+      border-color: #7dd3fc;
+      box-shadow:
+        0 0 0 4px rgba(56, 189, 248, 0.2),
+        0 16px 28px rgba(2, 8, 23, 0.45);
+    }
+
+    .trap-screen {
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 16px 26px rgba(0, 0, 0, 0.28);
+      animation: pulseIn 0.5s ease both;
+    }
+
+    .trap-title {
+      font-size: 1.45rem;
+      color: #fbbf24;
+      margin-bottom: 16px;
+      text-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
+    }
+
+    .trap-desc {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+      color: #cbd5e1;
+    }
+
+    .trap-item {
+      background: linear-gradient(145deg, rgba(46, 61, 99, 0.75), rgba(31, 43, 74, 0.9));
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      padding: 13px 14px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    .trap-item strong {
+      color: #fb7185;
+    }
+
+    .continue-btn {
+      background: linear-gradient(150deg, #0891b2, #2563eb);
+      border: 1px solid rgba(125, 211, 252, 0.45);
+      padding: 12px 28px;
+      font-size: 1rem;
+      margin-top: 20px;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(37, 99, 235, 0.38);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #result {
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 40px 0;
+      border: 3px solid;
+      text-align: center;
+      box-shadow: 0 18px 30px rgba(2, 8, 23, 0.36);
+      animation: fadeUp 0.55s ease both;
+    }
+
+    .success {
+      border-color: var(--ok);
+      color: #86efac;
+      box-shadow: 0 18px 30px rgba(34, 197, 94, 0.16);
+    }
+
+    .fail {
+      border-color: var(--danger);
+      color: #fca5a5;
+      box-shadow: 0 18px 30px rgba(239, 68, 68, 0.16);
+    }
+
+    .warning {
+      border-color: var(--warn);
+      color: #fde047;
+      box-shadow: 0 18px 30px rgba(245, 158, 11, 0.16);
+    }
+
+    button#restart {
+      background: linear-gradient(160deg, #0ea5e9, #2563eb);
+      border: 1px solid rgba(125, 211, 252, 0.55);
+      padding: 16px 40px;
+      font-size: 1.12rem;
+      border-radius: 12px;
+      margin: 32px auto 0;
+      display: block;
+      box-shadow: 0 14px 24px rgba(37, 99, 235, 0.28);
+    }
+
+    button#restart:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 30px rgba(37, 99, 235, 0.36);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0 16px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 15px 24px rgba(2, 8, 23, 0.3);
+    }
+
+    th, td {
+      padding: 12px 8px;
+      text-align: center;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    th {
+      background: rgba(37, 99, 235, 0.25);
+      color: #bae6fd;
+      font-weight: 600;
+    }
+
+    tr:hover td {
+      background: rgba(56, 189, 248, 0.07);
+    }
+
+    tr.profit td:nth-child(3) {
+      color: #86efac;
+      font-weight: bold;
+    }
+
+    tr.loss td:nth-child(3) {
+      color: #fca5a5;
+      font-weight: bold;
+    }
+
+    tr.bankrupt {
+      background: rgba(127, 29, 29, 0.72);
+      color: #fee2e2;
+    }
+
+    tr.diligence-fail {
+      background: rgba(120, 53, 15, 0.72);
+    }
+
+    .table-title {
+      text-align: center;
+      margin: 16px 0 8px;
+      font-size: 1.25rem;
+      color: #bfdbfe;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulseIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.97);
+      }
+      65% {
+        opacity: 1;
+        transform: scale(1.01);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px 8px 24px;
+      }
+
+      .intro,
+      .decision-card,
+      .trap-screen,
+      #result {
+        padding: 18px;
+      }
+
+      .question {
+        font-size: 1.15rem;
+      }
+
+      .dash-value {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="top-controls">
+    <button id="toggle-leaderboard" class="top-btn" onclick="toggleLeaderboard()">Show Leaderboard</button>
+  </div>
+
+  <div class="intro">
+    <h1>18 Months to Series A or Sudden Death</h1>
+    <div class="mission">
+      The Mission: Hit ₹60 L/mo Sales, keep Cash > 0, and survive the Unit Economics Gauntlet.
+    </div>
+  </div>
+
+  <div id="start-screen">
+    <div class="start-controls">
+      <input id="player-name" class="name-input" type="text" maxlength="32" placeholder="Enter your name for leaderboard" />
+    </div>
+    <div class="name-note">Your final Cash, Sales, and Burn will be saved on leaderboard.</div>
+    <button class="option-btn" style="font-size:1.2rem; padding:20px 48px; width:280px; margin:0 auto; display:block;" onclick="startGame()">
+      Start the Gauntlet
+    </button>
+  </div>
+
+  <div id="game" class="hidden">
+    <div id="round-titles">
+      <div class="round-title">ROUND 1 – The Foundation (Months 1–6)</div>
+    </div>
+    <div id="decisions"></div>
+
+    <div id="result" class="hidden"></div>
+    <button id="restart" class="hidden" onclick="location.reload()">Play Again</button>
+  </div>
+
+  <div id="leaderboard-section" class="trap-screen hidden">
+    <h3 class="trap-title">Leaderboard</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Cash</th>
+          <th>Sales</th>
+          <th>Burn</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// GAME LOGIC
+// ──────────────────────────────────────────────
+
+const decisions = [
+  {id:"D1", q:"D1 Customer DNA",          a:"Performance Blitz: Spend ₹50 L (Sales +₹15 L/mo)",               b:"Brand & Community: Spend ₹20 L (Sales +₹5 L/mo)"},
+  {id:"D2", q:"D2 The Brain",             a:"Integrated Systems: VCFO Partner (₹2 L/mo)",                     b:"Junior Interns: Junior Ops (₹1 L/mo)"},
+  {id:"D3", q:"D3 Product Strategy",      a:"Low-Moat: Resell trending items (Fast growth)",                  b:"High-Moat: Custom R&D items (Slow growth)"},
+  {id:"D4", q:"D4 Inventory",             a:"Bulk Buy: Spend ₹1 Cr upfront (20% better margins)",            b:"Lean/JIT: Spend ₹20 L upfront (Pay more per unit)"},
+  {id:"D5", q:"D5 Expansion",             a:"Army of Reps: Hire 20 staff (₹15 L/mo)",                         b:"Automation: 3 Leads + CRM (₹6 L/mo)"},
+  {id:"D6", q:"D6 Governance",            a:"Full Internal Audit: Reconcile all (₹5 L one-time)",            b:"Skip/Ignore: \"Focus on Sales.\" (₹0)"},
+  {id:"D7", q:"D7 Retention",             a:"The Discount Drug: 50% Off (Sales +₹10 L)",                      b:"Value Strategy: Bundles/Subs (Sales +₹5 L)"},
+  {id:"D8", q:"D8 The Pitch",             a:"Fully Loaded ROI (Transparent)",                                 b:"Unloaded ROI (Vanity)"},
+  {id:"D9", q:"D9 Growth Tap",            a:"Organic Engine: Ads to ₹0",                                     b:"The Ad-Hook: Spend ₹50 L"},
+  {id:"D10",q:"D10 Diligence",            a:"The Ready-Room",                                                b:"The Scramble"}
+];
+
+const LEADERBOARD_KEY = "gauntlet_leaderboard_v1";
+let currentPlayerName = "";
+let state = { choices: {}, step: 0, trapShown: false, choiceLocked: false, finalLeaksShown: false, resultSaved: false };
+let sim = {
+  cash: 300,
+  sales: 20,
+  margin: 0.40,
+  fixedBurn: 5,
+  ops: 0,
+  expansion: 0,
+  history: [{month:0, sales:20, pnl:0, cash:300, burn:5}]
+};
+
+function formatCashL(value) {
+  return `\u20B9${Math.round(value)} L`;
+}
+
+function formatMonthlyL(value) {
+  return `\u20B9${Math.round(value)} L/mo`;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function normalizeName(name) {
+  return name.replace(/\s+/g, " ").trim().slice(0, 32);
+}
+
+function loadLocalLeaderboard() {
+  try {
+    const raw = localStorage.getItem(LEADERBOARD_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveLocalLeaderboardEntry(entry) {
+  const board = loadLocalLeaderboard();
+  board.push(entry);
+  board.sort((a, b) => (b.cash - a.cash) || (b.sales - a.sales) || (a.burn - b.burn) || ((a.ts || 0) - (b.ts || 0)));
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board.slice(0, 50)));
+}
+
+async function loadLeaderboard() {
+  try {
+    const res = await fetch("/api/leaderboard", { headers: { "Accept": "application/json" } });
+    if (!res.ok) throw new Error("bad_status");
+    const rows = await res.json();
+    if (!Array.isArray(rows)) throw new Error("bad_payload");
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(rows.slice(0, 50)));
+    return rows;
+  } catch (e) {
+    return loadLocalLeaderboard();
+  }
+}
+
+async function saveLeaderboardEntry() {
+  if (state.resultSaved || !currentPlayerName) return;
+  const entry = {
+    name: currentPlayerName,
+    cash: sim.finalCash,
+    sales: sim.finalSales,
+    burn: sim.finalBurn,
+    ts: Date.now()
+  };
+
+  try {
+    const res = await fetch("/api/leaderboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: entry.name,
+        cash: entry.cash,
+        sales: entry.sales,
+        burn: entry.burn
+      })
+    });
+    if (!res.ok) throw new Error("save_failed");
+  } catch (e) {
+    saveLocalLeaderboardEntry(entry);
+  }
+
+  state.resultSaved = true;
+}
+
+async function renderLeaderboard() {
+  const body = document.getElementById("leaderboard-body");
+  if (!body) return;
+  const board = (await loadLeaderboard()).slice(0, 10);
+  if (!board.length) {
+    body.innerHTML = `<tr><td colspan="5">No entries yet. Be the first founder.</td></tr>`;
+    return;
+  }
+  body.innerHTML = board.map((row, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${escapeHtml(row.name)}</td>
+      <td>${formatCashL(row.cash)}</td>
+      <td>${formatMonthlyL(row.sales)}</td>
+      <td>${formatMonthlyL(row.burn)}</td>
+    </tr>
+  `).join("");
+}
+
+function setLeaderboardToggleLabel() {
+  const btn = document.getElementById("toggle-leaderboard");
+  const section = document.getElementById("leaderboard-section");
+  if (!btn || !section) return;
+  btn.innerText = section.classList.contains("hidden") ? "Show Leaderboard" : "Hide Leaderboard";
+}
+
+async function toggleLeaderboard() {
+  const section = document.getElementById("leaderboard-section");
+  if (!section) return;
+  if (section.classList.contains("hidden")) {
+    await renderLeaderboard();
+    section.classList.remove("hidden");
+  } else {
+    section.classList.add("hidden");
+  }
+  setLeaderboardToggleLabel();
+}
+
+function getRoundTitle(step) {
+  if (step <= 3) return "ROUND 1 - The Foundation (Months 1-6)";
+  if (step <= 6) return "ROUND 2 - Scale and Systems (Months 7-12)";
+  return "ROUND 3 - Investor Gauntlet (Months 13-18)";
+}
+
+function updateRoundTitle() {
+  const titleEl = document.querySelector("#round-titles .round-title");
+  if (!titleEl) return;
+  const nextTitle = getRoundTitle(state.step);
+  if (titleEl.textContent !== nextTitle) {
+    titleEl.textContent = nextTitle;
+    titleEl.style.animation = "none";
+    void titleEl.offsetWidth;
+    titleEl.style.animation = "fadeUp 0.45s ease both";
+  }
+}
+
+function startGame() {
+  const nameEl = document.getElementById("player-name");
+  const playerName = normalizeName(nameEl ? nameEl.value : "");
+  if (!playerName) {
+    alert("Please enter your name to join the leaderboard.");
+    if (nameEl) nameEl.focus();
+    return;
+  }
+  currentPlayerName = playerName;
+  state.resultSaved = false;
+  document.getElementById("start-screen").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  showDecision();
+}
+
+function showDecision() {
+  if (state.step >= decisions.length) {
+    if (!state.finalLeaksShown) {
+      showFinalLeaksScreen();
+      return;
+    }
+    simulate();
+    showResult();
+    return;
+  }
+
+  updateRoundTitle();
+
+  // After D7 (step 7 is D8), show trap if not shown
+  if (state.step === 7 && !state.trapShown) {
+    showTrapScreen();
+    return;
+  }
+
+  const d = decisions[state.step];
+  document.getElementById("decisions").innerHTML = `
+    <div class="decision-card">
+      <div class="question">${d.q}</div>
+      <div class="options">
+        <button class="option-btn" onclick="choose('${d.id}', 'A')">A (Aggressive): ${d.a}</button>
+        <button class="option-btn" onclick="choose('${d.id}', 'B')">B (Strategic): ${d.b}</button>
+      </div>
+    </div>
+  `;
+}
+
+function choose(id, choice) {
+  if (state.choiceLocked) return;
+  state.choiceLocked = true;
+  state.choices[id] = choice;
+  const btns = document.querySelectorAll(".option-btn");
+  btns.forEach(b => b.classList.toggle("active", b.innerText.startsWith(choice)));
+  btns.forEach(b => { b.disabled = true; });
+  applyImmediateEffect(id, choice);
+  updateLiveDashboard();
+  setTimeout(() => {
+    state.step++;
+    state.choiceLocked = false;
+    showDecision();
+  }, 380);
+}
+
+function applyImmediateEffect(id, choice) {
+  // Apply effects immediately for live update
+  switch (id) {
+    case "D1":
+      if (choice === 'A') { sim.cash -= 50; sim.sales += 15; }
+      else { sim.cash -= 20; sim.sales += 5; }
+      break;
+    case "D2":
+      sim.ops = choice === 'A' ? 2 : 1;
+      break;
+    case "D3":
+      // Growth applied in sim
+      break;
+    case "D4":
+      if (choice === 'A') { sim.cash -= 100; sim.margin = 0.60; }
+      else { sim.cash -= 20; }
+      break;
+    case "D5":
+      if (choice === 'A') { sim.expansion = 15; sim.sales += 20; }
+      else { sim.expansion = 6; sim.sales += 10; }
+      break;
+    case "D6":
+      if (choice === 'A') sim.cash -= 5;
+      break;
+    case "D7":
+      if (choice === 'A') { sim.sales += 10; sim.margin = Math.max(0.10, sim.margin - 0.15); }
+      else { sim.sales += 5; }
+      break;
+    case "D9":
+      if (choice === 'B') sim.cash -= 50;
+      break;
+    // D8 and D10 no immediate economic effect
+  }
+}
+
+function updateLiveDashboard() {
+  const cashEl = document.getElementById("dash-cash");
+  const salesEl = document.getElementById("dash-sales");
+  const burnEl = document.getElementById("dash-burn");
+  if (!cashEl || !salesEl || !burnEl) return;
+  const burn = sim.fixedBurn + sim.ops + sim.expansion;
+  cashEl.innerText = formatCashL(sim.cash);
+  salesEl.innerText = formatMonthlyL(sim.sales);
+  burnEl.innerText = formatMonthlyL(burn);
+}
+
+function showTrapScreen() {
+  const c = state.choices;
+  let productTrap = c.D3 === 'A';
+  let brandTrap = c.D1 === 'A';
+  let managementTrap = c.D2 === 'B';
+
+  let html = `
+    <div class="trap-screen">
+      <div class="trap-title">The Trap</div>
+      <div class="trap-desc">"You didn't choose these options. Your architecture chose them for you."</div>
+      <div class="trap-item">
+        <strong>The Product Trap</strong><br>
+        Chose Low-Moat? You have loyalty issues. You are FORCED to take the Discount Drug to clear inventory.
+        ${productTrap ? '<br><em>Applied: D7 forced to A (Discount Drug)</em>' : '<br><em>Not applied</em>'}
+      </div>
+      <div class="trap-item">
+        <strong>The Brand Edge Trap (D1 → D5)</strong><br>
+        Chose Blitz? You have no organic pull. You are FORCED to hire the Army of Reps to push sales.
+        ${brandTrap ? '<br><em>Applied: D5 forced to A (Army of Reps)</em>' : '<br><em>Not applied</em>'}
+      </div>
+      <div class="trap-item">
+        <strong>The Management Trap (D2 → D5)</strong><br>
+        Chose Interns? Your systems are manual. You are FORCED to hire the Army of Reps to manage the chaos.
+        ${managementTrap ? '<br><em>Applied: D5 forced to A (Army of Reps)</em>' : '<br><em>Not applied</em>'}
+      </div>
+      <button class="continue-btn" onclick="continueFromTrap()">Continue to Round 3</button>
+    </div>
+  `;
+
+  document.getElementById("decisions").innerHTML = html;
+
+  // Apply forces
+  if (productTrap) {
+    state.choices.D7 = 'A';
+    applyImmediateEffect('D7', 'A');
+  }
+  if (brandTrap || managementTrap) {
+    state.choices.D5 = 'A';
+    applyImmediateEffect('D5', 'A');
+  }
+  updateLiveDashboard();
+}
+
+function continueFromTrap() {
+  state.trapShown = true;
+  showDecision();
+}
+
+function showFinalLeaksScreen() {
+  const c = state.choices;
+  const zuckerbergTax = c.D1 === 'A' && c.D9 === 'A';
+  const inventoryArmed = c.D4 === 'A';
+  const complianceHammer = c.D2 === 'B' && c.D6 === 'B';
+
+  document.getElementById("decisions").innerHTML = `
+    <div class="trap-screen">
+      <div class="trap-title">Final Hidden Leaks</div>
+      <div class="trap-desc">Before results, here are the 3 late-game traps that can sink the outcome.</div>
+      <div class="trap-item">
+        <strong>The Zuckerberg Tax</strong><br>
+        D1-A + D9-A triggers a forced Ad-Hook and a 40% sales crash.
+        ${zuckerbergTax ? '<br><em>Status: Triggered</em>' : '<br><em>Status: Not triggered</em>'}
+      </div>
+      <div class="trap-item">
+        <strong>The Inventory Implosion</strong><br>
+        D4-A locks cash in bulk inventory. If final sales stay below ₹60 L/mo, cash is hit by ₹50 L.
+        ${inventoryArmed ? '<br><em>Status: Armed (depends on final sales)</em>' : '<br><em>Status: Not armed</em>'}
+      </div>
+      <div class="trap-item">
+        <strong>The Compliance Hammer</strong><br>
+        D2-B + D6-B causes a ₹40 L compliance hit in final settlement.
+        ${complianceHammer ? '<br><em>Status: Triggered</em>' : '<br><em>Status: Not triggered</em>'}
+      </div>
+      <button class="continue-btn" onclick="continueToResult()">Continue to Final Result</button>
+    </div>
+  `;
+}
+
+function continueToResult() {
+  state.finalLeaksShown = true;
+  document.getElementById("decisions").innerHTML = "";
+  simulate();
+  showResult();
+}
+
+function applyTrapsAndForces() {
+  const c = state.choices;
+  let crash = false;
+
+  // Traps already applied in showTrapScreen, but re-confirm
+  if (c.D1 === 'A' || c.D2 === 'B') c.D5 = 'A';
+  if (c.D3 === 'A') c.D7 = 'A';
+
+  // Zuckerberg Tax
+  if (c.D1 === 'A' && c.D9 === 'A') {
+    crash = true;
+    c.D9 = 'B';
+  }
+
+  return { crash };
+}
+
+function simulate() {
+  const c = state.choices;
+  const traps = applyTrapsAndForces();
+
+  // Reset history for full sim
+  sim.history = [{month:0, sales: sim.sales, pnl:0, cash: sim.cash, burn: sim.fixedBurn + sim.ops + sim.expansion}];
+
+  let bankruptAt = -1;
+  for (let m = 1; m <= 18; m++) {
+    const burn = sim.fixedBurn + sim.ops + sim.expansion;
+    const pnl = (sim.sales * sim.margin) - burn;
+    sim.cash += pnl;
+
+    sim.history.push({
+      month: m,
+      sales: Math.round(sim.sales),
+      pnl: Math.round(pnl),
+      cash: Math.round(sim.cash),
+      burn: Math.round(burn)
+    });
+
+    if (sim.cash <= 0) { bankruptAt = m; break; }
+
+    // Late growth approximation
+    if (m === 6  && c.D3 === 'A') sim.sales += 6;
+    if (m === 12 && c.D3 === 'B') sim.sales += 9;
+  }
+
+  // Final leaks / hammers
+  if (c.D4 === 'A' && sim.sales < 60) sim.cash -= 50;           // Inventory Implosion
+  if (c.D2 === 'B' && c.D6 === 'B')   sim.cash -= 40;           // Compliance Hammer
+
+  // Apply crash if triggered
+  if (traps.crash) {
+    sim.sales = Math.round(sim.sales * 0.6);
+    sim.history.forEach(h => { if (h.month >= 13) h.sales = Math.round(h.sales * 0.6); });
+  }
+
+  // Diligence friction
+  const diligenceFail = (c.D8 === 'B' || c.D10 === 'B');
+  if (diligenceFail) sim.cash -= 15;
+
+  sim.finalCash   = Math.max(0, Math.round(sim.cash));
+  sim.finalSales  = Math.round(sim.sales);
+  sim.finalBurn   = Math.round(sim.fixedBurn + sim.ops + sim.expansion);
+  sim.bankruptAt  = bankruptAt;
+  sim.diligenceFail = diligenceFail;
+}
+
+
+function showResult() {
+  const el = document.getElementById("result");
+  let verdict = "";
+  let cls = "";
+
+  const cleared = sim.finalSales >= 60 &&
+                  sim.finalCash > 0 &&
+                  !sim.diligenceFail &&
+                  sim.bankruptAt === -1;
+
+  if (sim.bankruptAt !== -1) {
+    verdict = `Bankrupt in Month ${sim.bankruptAt} — Sudden Death`;
+    cls = "fail";
+  } else if (sim.finalSales < 60) {
+    verdict = "Sales < ₹60 L/mo — Mission Failed";
+    cls = "fail";
+  } else if (sim.diligenceFail) {
+    verdict = "Diligence Failed (Vanity/Scramble) — VC Walks";
+    cls = "warning";
+  } else {
+    verdict = "Series A Cleared! 🎉";
+    cls = "success";
+  }
+
+  // Keep live dashboard display aligned with final board units and values.
+  updateLiveDashboard();
+  saveLeaderboardEntry().then(renderLeaderboard).catch(() => {});
+
+  el.innerHTML = `
+    <h2>${verdict}</h2>
+    <div class="mission" style="text-align:center; margin-top:0;">Founder: ${escapeHtml(currentPlayerName)}</div>
+    <div class="dashboard" style="margin:24px 0;">
+      <div class="dash-card"><div class="dash-label">Final Cash</div><div class="dash-value">${formatCashL(sim.finalCash)}</div></div>
+      <div class="dash-card"><div class="dash-label">Final Sales</div><div class="dash-value">${formatMonthlyL(sim.finalSales)}</div></div>
+      <div class="dash-card"><div class="dash-label">Monthly Burn</div><div class="dash-value">${formatMonthlyL(sim.finalBurn)}</div></div>
+    </div>
+  `;
+  el.className = cls;
+  el.classList.remove("hidden");
+  document.getElementById("restart").classList.remove("hidden");
+}
+
+renderLeaderboard().catch(() => {});
+setLeaderboardToggleLabel();
+const playerNameInput = document.getElementById("player-name");
+if (playerNameInput) {
+  playerNameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") startGame();
+  });
+}
+
+
+</script>
+</body>
+</html>
+
+
