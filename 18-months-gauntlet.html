@@ -485,13 +485,14 @@
     <div class="mission">
       The Mission: Hit ₹60 L/mo Sales, keep Cash > 0, and survive the Unit Economics Gauntlet.
     </div>
+    <div class="dashboard" style="margin:20px 0;">
+      <div class="dash-card"><div class="dash-label">Starting Cash</div><div class="dash-value">₹300 L</div></div>
+      <div class="dash-card"><div class="dash-label">Starting Sales</div><div class="dash-value">₹20 L/mo</div></div>
+      <div class="dash-card"><div class="dash-label">Starting Burn</div><div class="dash-value">₹5 L/mo</div></div>
+    </div>
   </div>
 
   <div id="start-screen">
-    <div class="start-controls">
-      <input id="player-name" class="name-input" type="text" maxlength="32" placeholder="Enter your name" />
-    </div>
-    <div class="name-note"></div>
     <button class="option-btn" style="font-size:1.2rem; padding:20px 48px; width:280px; margin:0 auto; display:block;" onclick="startGame()">
       Start the Gauntlet
     </button>
@@ -528,7 +529,7 @@ const decisions = [
   {id:"D10",q:"D10 Diligence",            a:"The Ready-Room",                                                b:"The Scramble"}
 ];
 
-let currentPlayerName = "";
+let currentPlayerName = "Founder";
 let state = { choices: {}, step: 0, trapShown: false, choiceLocked: false, finalLeaksShown: false, resultSaved: false };
 let sim = {
   cash: 300,
@@ -557,11 +558,6 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function normalizeName(name) {
-  return name.replace(/\s+/g, " ").trim().slice(0, 32);
-}
-
-
 function getRoundTitle(step) {
   if (step <= 3) return "ROUND 1 - The Foundation (Months 1-6)";
   if (step <= 6) return "ROUND 2 - Scale and Systems (Months 7-12)";
@@ -581,14 +577,6 @@ function updateRoundTitle() {
 }
 
 function startGame() {
-  const nameEl = document.getElementById("player-name");
-  const playerName = normalizeName(nameEl ? nameEl.value : "");
-  if (!playerName) {
-    alert("Please enter your name to join the leaderboard.");
-    if (nameEl) nameEl.focus();
-    return;
-  }
-  currentPlayerName = playerName;
   state.resultSaved = false;
   document.getElementById("start-screen").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
