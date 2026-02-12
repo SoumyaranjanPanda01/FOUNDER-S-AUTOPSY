@@ -1,4 +1,34 @@
+# Dependencies
 node_modules/
+package-lock.json
+
+# Database
 leaderboard.db
 leaderboard.db-shm
 leaderboard.db-wal
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build/dist
+dist/
+build/
